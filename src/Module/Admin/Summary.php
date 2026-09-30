@@ -214,9 +214,10 @@ class Summary extends BaseAdmin
 				DI::l10n()->t('Collations') => $db_collations,
 			],
 			'cache_label' => DI::l10n()->t('Cache'),
-			'cache' => array_merge($this->getRedisSettings(in_array(RedisCache::NAME, $cache_drivers, true)), [
-				'APCu' => in_array(APCuCache::NAME, $cache_drivers, true) ? DI::l10n()->t('Yes') : DI::l10n()->t('No'),
-			]),
+			'cache' => array_merge(
+				$this->getRedisSettings(in_array(RedisCache::NAME, $cache_drivers, true)),
+				$this->getAPCuSettings(in_array(APCuCache::NAME, $cache_drivers, true)),
+			),
 			'curl' => [
 				'version' => $curl['version'],
 				'HTTP/2'  => ($curl['features'] & CURL_VERSION_HTTP2) ? DI::l10n()->t('Yes') : DI::l10n()->t('No'),
@@ -283,6 +284,20 @@ class Summary extends BaseAdmin
 			DI::l10n()->t('Redis status')         => $status,
 			DI::l10n()->t('Redis version')        => $version,
 			DI::l10n()->t('Redis database index') => (int) DI::config()->get('system', 'redis_db', 0),
+		];
+	}
+
+	private function getAPCuSettings(bool $enabled): array
+	{
+		$status = DI::l10n()->t('Disabled');
+
+		if ($enabled) {
+			$status = APCuCache::isAvailable() ? DI::l10n()->t('Enabled and available') : DI::l10n()->t('Enabled but unavailable');
+		}
+
+		return [
+			DI::l10n()->t('APCu status')  => $status,
+			DI::l10n()->t('APCu version') => phpversion('apcu') ?: DI::l10n()->t('Unavailable'),
 		];
 	}
 
