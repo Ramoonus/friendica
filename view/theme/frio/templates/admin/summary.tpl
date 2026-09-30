@@ -53,7 +53,7 @@
 					{{foreach $serversettings.php as $k => $p}}
 						<tr><td>{{$k}}</td><td>{{$p}}</td></tr>
 					{{/foreach}}
-					<tr class="info"><td colspan="2">MySQL / MariaDB</td></tr>
+					<tr class="info"><td colspan="2">Database</td></tr>
 					{{foreach $serversettings.mysql as $k => $p}}
 						<tr><td>{{$k}}</td><td>{{$p}}</td></tr>
 					{{/foreach}}
