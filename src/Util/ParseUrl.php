@@ -32,7 +32,7 @@ use Friendica\Model\Post;
  */
 class ParseUrl
 {
-	public const DEFAULT_EXPIRATION_FAILURE = 'now + 1 day';
+	public const DEFAULT_EXPIRATION_FAILURE = 'now + 3 days';
 	public const DEFAULT_EXPIRATION_SUCCESS = 'now + 3 months';
 
 	/**
