@@ -9,6 +9,8 @@ namespace Friendica\Module\Admin;
 
 use Friendica\App;
 use Friendica\Core\Addon\Exception\InvalidAddonException;
+use Friendica\Core\Cache\Type\APCuCache;
+use Friendica\Core\Cache\Type\RedisCache;
 use Friendica\Core\Config\ValueObject\Cache;
 use Friendica\Core\Renderer;
 use Friendica\Core\Update;
@@ -168,6 +170,12 @@ class Summary extends BaseAdmin
 		$db_version = (string) DBA::getVariable('version');
 		$curl       = curl_version();
 
+		// A cache backend can be enabled for local caching, distributed caching, or both.
+		$cache_drivers = [
+			DI::config()->get('system', 'cache_driver'),
+			DI::config()->get('system', 'distributed_cache_driver'),
+		];
+
 		$server_settings = [
 			'label' => DI::l10n()->t('Server Settings'),
 			'php'   => [
@@ -181,6 +189,11 @@ class Summary extends BaseAdmin
 				'type'               => str_contains($db_version, 'MariaDB') ? 'MariaDB' : 'MySQL',
 				'version'            => $db_version,
 				'max_allowed_packet' => Strings::formatBytes((int) DBA::getVariable('max_allowed_packet')),
+			],
+			'cache_label' => DI::l10n()->t('Cache'),
+			'cache' => [
+				'Redis' => in_array(RedisCache::NAME, $cache_drivers, true) ? DI::l10n()->t('Yes') : DI::l10n()->t('No'),
+				'APCu'  => in_array(APCuCache::NAME, $cache_drivers, true) ? DI::l10n()->t('Yes') : DI::l10n()->t('No'),
 			],
 			'curl' => [
 				'version' => $curl['version'],
