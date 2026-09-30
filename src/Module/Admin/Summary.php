@@ -19,6 +19,7 @@ use Friendica\Core\Config\Factory\Config;
 use Friendica\Module\BaseAdmin;
 use Friendica\Network\HTTPClient\Client\HttpClientAccept;
 use Friendica\Util\DateTimeFormat;
+use Friendica\Util\Strings;
 
 class Summary extends BaseAdmin
 {
@@ -179,7 +180,7 @@ class Summary extends BaseAdmin
 			'mysql' => [
 				'type'               => str_contains($db_version, 'MariaDB') ? 'MariaDB' : 'MySQL',
 				'version'            => $db_version,
-				'max_allowed_packet' => DBA::getVariable('max_allowed_packet'),
+				'max_allowed_packet' => Strings::formatBytes((int) DBA::getVariable('max_allowed_packet')),
 			],
 			'curl' => [
 				'version' => $curl['version'],
