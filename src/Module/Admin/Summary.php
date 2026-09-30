@@ -187,7 +187,7 @@ class Summary extends BaseAdmin
 			],
 			'mysql' => [
 				'type'               => str_contains($db_version, 'MariaDB') ? 'MariaDB' : 'MySQL',
-				'version'            => $db_version,
+				'version'            => preg_replace('/^(\d+\.\d+\.\d+).*$/', '$1', $db_version),
 				'max_allowed_packet' => Strings::formatBytes((int) DBA::getVariable('max_allowed_packet')),
 			],
 			'cache_label' => DI::l10n()->t('Cache'),
