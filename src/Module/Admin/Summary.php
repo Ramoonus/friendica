@@ -173,6 +173,16 @@ class Summary extends BaseAdmin
 			DBA::databaseName(),
 		);
 
+		// Include table defaults and column-specific collations, without duplicates.
+		$collations = DBA::p(
+			'SELECT `table_collation` AS `collation` FROM `information_schema`.`tables` WHERE `table_schema` = ? AND `table_collation` IS NOT NULL
+			 UNION SELECT `collation_name` AS `collation` FROM `information_schema`.`columns` WHERE `table_schema` = ? AND `collation_name` IS NOT NULL
+			 ORDER BY `collation`',
+			DBA::databaseName(),
+			DBA::databaseName(),
+		);
+		$db_collations = $collations ? implode(', ', array_column(DBA::toArray($collations), 'collation')) : DI::l10n()->t('Unavailable');
+
 		$db_version = (string) DBA::getVariable('version');
 		$curl       = curl_version();
 
@@ -199,6 +209,7 @@ class Summary extends BaseAdmin
 				'version'            => preg_replace('/^(\d+\.\d+\.\d+).*$/', '$1', $db_version),
 				'max_allowed_packet' => Strings::formatBytes((int) DBA::getVariable('max_allowed_packet')),
 				DI::l10n()->t('Size (data and indexes)') => isset($db_size['size']) ? Strings::formatBytes((int) $db_size['size']) : DI::l10n()->t('Unavailable'),
+				DI::l10n()->t('Collations') => $db_collations,
 			],
 			'cache_label' => DI::l10n()->t('Cache'),
 			'cache' => [
