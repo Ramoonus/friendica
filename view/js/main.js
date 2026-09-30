@@ -70,7 +70,7 @@ const registerModuleLifecycle = function (target, initialize, readyEvent) {
 			if (spaEnabled) {
 				window.addEventListener('spa:window:load', refresh, { passive: true });
 			} else {
-				$(window).load(refresh);
+				$(window).on('load', refresh);
 			}
 		} else {
 			if (spaEnabled) {

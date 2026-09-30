@@ -340,7 +340,7 @@ License: https://github.com/ashleydw/lightbox/blob/master/LICENSE
             if (_this.modal_arrows) {
               _this.modal_arrows.css('display', 'block');
             }
-            return image.load(function() {
+            return image.on('load', function() {
               if (_this.options.scale_height) {
                 _this.scaleHeight(img.height, img.width);
               } else {

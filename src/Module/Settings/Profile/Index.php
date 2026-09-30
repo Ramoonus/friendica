@@ -180,7 +180,7 @@ class Index extends BaseSettings
 
 		$owner['about'] = Profile::addResponsibleRelayContact($owner['about'], $owner['parent-uid'], $owner['account-type'], $owner['language']);
 
-		$this->page->registerFooterScript('view/asset/es-jquery-sortable/source/js/jquery-sortable-min.js');
+		$this->page->registerFooterScript('view/js/jquery-sortable/jquery-sortable-min.js');
 		$this->page->registerFooterScript(Theme::getPathForFile('js/module/settings/profile/index.js'));
 
 		$custom_fields = [];

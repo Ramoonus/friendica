@@ -5,7 +5,7 @@
   * SPDX-License-Identifier: AGPL-3.0-or-later
   *}}
 
-<script type="text/javascript" src="view/asset/es-jquery-sortable/source/js/jquery-sortable.js"></script>
+<script type="text/javascript" src="view/js/jquery-sortable/jquery-sortable.js"></script>
 <link rel="stylesheet" href="view/settings.css" type="text/css" media="all" />
 <script>
 	var ispublic = "{{$ispublic nofilter}}";

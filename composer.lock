@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "445dec6ec7f891f2e76a20f868ad25ec",
+    "content-hash": "31fb47c2c40fc41bc2f250287be04fa4",
     "packages": [
         {
             "name": "asika/simple-console",
@@ -1975,21 +1975,6 @@
             ]
         },
         {
-            "name": "npm-asset/es-jquery-sortable",
-            "version": "0.9.13-patch2",
-            "dist": {
-                "type": "tar",
-                "url": "https://registry.npmjs.org/es-jquery-sortable/-/es-jquery-sortable-0.9.13-patch2.tgz"
-            },
-            "require": {
-                "npm-asset/jquery": ">=2.1.2,<3.0.0"
-            },
-            "type": "npm-asset",
-            "license": [
-                "BSD-3"
-            ]
-        },
-        {
             "name": "npm-asset/ev-emitter",
             "version": "1.1.1",
             "dist": {
@@ -2042,10 +2027,10 @@
         },
         {
             "name": "npm-asset/jquery",
-            "version": "2.2.4",
+            "version": "3.7.1",
             "dist": {
                 "type": "tar",
-                "url": "https://registry.npmjs.org/jquery/-/jquery-2.2.4.tgz"
+                "url": "https://registry.npmjs.org/jquery/-/jquery-3.7.1.tgz"
             },
             "type": "npm-asset",
             "license": [
