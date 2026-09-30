@@ -176,6 +176,8 @@ class Summary extends BaseAdmin
 			DI::config()->get('system', 'distributed_cache_driver'),
 		];
 
+		$max_execution_time = (int) ini_get('max_execution_time');
+
 		$server_settings = [
 			'label' => DI::l10n()->t('Server Settings'),
 			'php'   => [
@@ -184,6 +186,7 @@ class Summary extends BaseAdmin
 				'upload_max_filesize' => ini_get('upload_max_filesize'),
 				'post_max_size'       => ini_get('post_max_size'),
 				'memory_limit'        => ini_get('memory_limit'),
+				'max_execution_time'  => $max_execution_time === 0 ? DI::l10n()->t('Unlimited') : DI::l10n()->t('%d seconds', $max_execution_time),
 			],
 			'mysql' => [
 				'type'               => str_contains($db_version, 'MariaDB') ? 'MariaDB' : 'MySQL',
