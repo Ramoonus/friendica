@@ -186,6 +186,18 @@ class Summary extends BaseAdmin
 		$db_collations = $collations ? implode(', ', array_column(DBA::toArray($collations), 'collation')) : DI::l10n()->t('Unavailable');
 
 		$db_version = (string) DBA::getVariable('version');
+
+		$is_mariadb             = stripos($db_version, 'MariaDB') !== false;
+		$db_query_time_variable = $is_mariadb ? 'max_statement_time' : 'max_execution_time';
+		$db_query_time          = DBA::getVariable($db_query_time_variable);
+		$db_query_time_display  = DI::l10n()->t('Unavailable');
+
+		if (is_numeric($db_query_time)) {
+			// MySQL reports milliseconds; MariaDB reports seconds, including fractions.
+			$db_query_time_seconds = (float) $db_query_time / ($is_mariadb ? 1 : 1000);
+			$db_query_time_display = $db_query_time_seconds == 0 ? DI::l10n()->t('Unlimited') : DI::l10n()->t('%s seconds', (string) $db_query_time_seconds);
+		}
+
 		$curl       = curl_version();
 
 		// A cache backend can be enabled for local caching, distributed caching, or both.
@@ -207,11 +219,12 @@ class Summary extends BaseAdmin
 				'max_execution_time'  => $max_execution_time === 0 ? DI::l10n()->t('Unlimited') : DI::l10n()->t('%d seconds', $max_execution_time),
 			],
 			'mysql' => [
-				'type'               => str_contains($db_version, 'MariaDB') ? 'MariaDB' : 'MySQL',
+				'type'               => $is_mariadb ? 'MariaDB' : 'MySQL',
 				'version'            => preg_replace('/^(\d+\.\d+\.\d+).*$/', '$1', $db_version),
 				'max_allowed_packet' => Strings::formatBytes((int) DBA::getVariable('max_allowed_packet')),
 				DI::l10n()->t('Size (data and indexes)') => isset($db_size['size']) ? Strings::formatBytes((int) $db_size['size']) : DI::l10n()->t('Unavailable'),
 				DI::l10n()->t('Collations') => $db_collations,
+				DI::l10n()->t('Query time limit (global)') . ' (' . $db_query_time_variable . ')' => $db_query_time_display,
 			],
 			'cache_label' => DI::l10n()->t('Cache'),
 			'cache' => array_merge(
