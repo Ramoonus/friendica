@@ -167,6 +167,12 @@ class Summary extends BaseAdmin
 		// We can do better, but this is a quick queue status
 		$queues = ['label' => DI::l10n()->t('Message queues'), 'deferred' => $deferred, 'workerq' => $workerqueue];
 
+		// Table statistics approximate the space allocated to data and indexes.
+		$db_size = DBA::fetchFirst(
+			'SELECT COALESCE(SUM(`data_length` + `index_length`), 0) AS `size` FROM `information_schema`.`tables` WHERE `table_schema` = ?',
+			DBA::databaseName(),
+		);
+
 		$db_version = (string) DBA::getVariable('version');
 		$curl       = curl_version();
 
@@ -192,6 +198,7 @@ class Summary extends BaseAdmin
 				'type'               => str_contains($db_version, 'MariaDB') ? 'MariaDB' : 'MySQL',
 				'version'            => preg_replace('/^(\d+\.\d+\.\d+).*$/', '$1', $db_version),
 				'max_allowed_packet' => Strings::formatBytes((int) DBA::getVariable('max_allowed_packet')),
+				DI::l10n()->t('Size (data and indexes)') => isset($db_size['size']) ? Strings::formatBytes((int) $db_size['size']) : DI::l10n()->t('Unavailable'),
 			],
 			'cache_label' => DI::l10n()->t('Cache'),
 			'cache' => [
