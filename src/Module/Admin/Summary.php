@@ -9,6 +9,8 @@ namespace Friendica\Module\Admin;
 
 use Friendica\App;
 use Friendica\Core\Addon\Exception\InvalidAddonException;
+use Friendica\Core\Cache\Exception\CachePersistenceException;
+use Friendica\Core\Cache\Exception\InvalidCacheDriverException;
 use Friendica\Core\Cache\Type\APCuCache;
 use Friendica\Core\Cache\Type\RedisCache;
 use Friendica\Core\Config\ValueObject\Cache;
@@ -212,10 +214,9 @@ class Summary extends BaseAdmin
 				DI::l10n()->t('Collations') => $db_collations,
 			],
 			'cache_label' => DI::l10n()->t('Cache'),
-			'cache' => [
-				'Redis' => in_array(RedisCache::NAME, $cache_drivers, true) ? DI::l10n()->t('Yes') : DI::l10n()->t('No'),
-				'APCu'  => in_array(APCuCache::NAME, $cache_drivers, true) ? DI::l10n()->t('Yes') : DI::l10n()->t('No'),
-			],
+			'cache' => array_merge($this->getRedisSettings(in_array(RedisCache::NAME, $cache_drivers, true)), [
+				'APCu' => in_array(APCuCache::NAME, $cache_drivers, true) ? DI::l10n()->t('Yes') : DI::l10n()->t('No'),
+			]),
 			'curl' => [
 				'version' => $curl['version'],
 				'HTTP/2'  => ($curl['features'] & CURL_VERSION_HTTP2) ? DI::l10n()->t('Yes') : DI::l10n()->t('No'),
@@ -259,6 +260,30 @@ class Summary extends BaseAdmin
 			'$warningtext'        => $warningtext,
 			'$link_enable_addons' => DI::l10n()->t('Enable new addons'),
 		]);
+	}
+
+	private function getRedisSettings(bool $enabled): array
+	{
+		$status  = DI::l10n()->t('Disabled');
+		$version = DI::l10n()->t('Unavailable');
+
+		if ($enabled) {
+			try {
+				$redis = new RedisCache(DI::baseUrl()->getHost(), DI::config());
+				$stats = $redis->getStats();
+
+				$status  = DI::l10n()->t('Enabled and reachable');
+				$version = $stats['version'] ?? DI::l10n()->t('Unavailable');
+			} catch (CachePersistenceException | InvalidCacheDriverException | \RedisException $exception) {
+				$status = DI::l10n()->t('Enabled but unavailable');
+			}
+		}
+
+		return [
+			DI::l10n()->t('Redis status')         => $status,
+			DI::l10n()->t('Redis version')        => $version,
+			DI::l10n()->t('Redis database index') => (int) DI::config()->get('system', 'redis_db', 0),
+		];
 	}
 
 	private static function checkSelfNodeinfo()
