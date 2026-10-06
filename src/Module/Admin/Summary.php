@@ -278,16 +278,18 @@ class Summary extends BaseAdmin
 
 	private function getRedisSettings(bool $enabled): array
 	{
-		$status  = DI::l10n()->t('Disabled');
-		$version = DI::l10n()->t('Unavailable');
+		$status      = DI::l10n()->t('Disabled');
+		$server_type = DI::l10n()->t('Unavailable');
+		$version     = DI::l10n()->t('Unavailable');
 
 		if ($enabled) {
 			try {
 				$redis = new RedisCache(DI::baseUrl()->getHost(), DI::config());
 				$stats = $redis->getStats();
 
-				$status  = DI::l10n()->t('Enabled and reachable');
-				$version = $stats['version'] ?? DI::l10n()->t('Unavailable');
+				$status      = DI::l10n()->t('Enabled and reachable');
+				$server_type = $stats['server_type'] ?? DI::l10n()->t('Unavailable');
+				$version     = $stats['server_version'] ?? DI::l10n()->t('Unavailable');
 			} catch (CachePersistenceException | InvalidCacheDriverException | \RedisException $exception) {
 				$status = DI::l10n()->t('Enabled but unavailable');
 			}
@@ -295,6 +297,7 @@ class Summary extends BaseAdmin
 
 		return [
 			DI::l10n()->t('Redis status')         => $status,
+			DI::l10n()->t('Server type')          => $server_type,
 			DI::l10n()->t('Redis version')        => $version,
 			DI::l10n()->t('Redis database index') => (int) DI::config()->get('system', 'redis_db', 0),
 		];
