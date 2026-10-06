@@ -213,8 +213,23 @@ class RedisCache extends AbstractCache implements ICanCacheInMemory
 	{
 		$info = $this->redis->info();
 
+		// Compatible servers also advertise redis_version; prefer their own identity.
+		$server_type    = isset($info['redis_version']) ? 'Redis' : null;
+		$server_version = $info['redis_version'] ?? null;
+
+		if (isset($info['dragonfly_version']) || strtolower($info['server_name'] ?? '') === 'dragonfly') {
+			$server_type    = 'Dragonfly';
+			$server_version = $info['dragonfly_version'] ?? null;
+		} elseif (isset($info['valkey_version']) || strtolower($info['server_name'] ?? '') === 'valkey') {
+			$server_type    = 'Valkey';
+			$server_version = $info['valkey_version'] ?? null;
+		}
+
+
 		return [
 			'version'           => $info['redis_version']     ?? null,
+			'server_type'       => $server_type,
+			'server_version'    => $server_version,
 			'entries'           => $this->redis->dbSize()     ?? null,
 			'used_memory'       => $info['used_memory']       ?? null,
 			'connected_clients' => $info['connected_clients'] ?? null,
