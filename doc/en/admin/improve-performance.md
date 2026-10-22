@@ -40,6 +40,10 @@ They show your performance problems.
 
 ## Apache Webserver
 
+For repeated public ActivityPub object reads during federation bursts, see the
+optional [shared object cache experiment](help/admin/activitypub-object-cache).
+It is disabled by default and must first be validated on a staging origin.
+
 The following Apache modules are recommended:
 
 ### Cache-Control

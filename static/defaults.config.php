@@ -173,6 +173,12 @@ return [
 		// Whether to use Memcache, Memcached, Redis or APCu to store temporary cache.
 		'cache_driver' => 'database',
 
+		// activitypub_object_cache_ttl (Integer)
+		// Opt-in shared HTTP cache lifetime for anonymous reads of public ActivityPub objects.
+		// 0 disables caching; positive values are capped at 60 seconds. Requires a reverse cache.
+		// Cached public objects may remain available until expiry after an edit or deletion.
+		'activitypub_object_cache_ttl' => 0,
+
 		// distributed_cache_driver (database|memcache|memcached|redis)
 		// Whether to use database, Memcache, Memcached or Redis as a distributed cache.
 		'distributed_cache_driver' => 'database',
