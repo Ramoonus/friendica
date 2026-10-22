@@ -13,6 +13,7 @@ use Friendica\DI;
 use Friendica\Model\Contact;
 use Friendica\Model\Item;
 use Friendica\Model\Post;
+use Friendica\Network\ActivityPubObjectCache;
 use Friendica\Network\HTTPException;
 use Friendica\Protocol\ActivityPub;
 use Friendica\Util\HTTPSignature;
@@ -26,6 +27,10 @@ class Objects extends BaseModule
 {
 	protected function rawContent(array $request = [])
 	{
+		// Errors, private objects and activity variants must never enter a shared cache.
+		header('Cache-Control: private, no-store');
+		header('Vary: ' . ActivityPubObjectCache::VARY, false);
+
 		if (empty($this->parameters['guid'])) {
 			throw new HTTPException\BadRequestException();
 		}
@@ -125,6 +130,12 @@ class Objects extends BaseModule
 		if ($item['deleted']) {
 			$this->earlyJsonError(410, $data, 'application/activity+json');
 		} else {
+			header('Cache-Control: ' . ActivityPubObjectCache::cacheControl(
+				(int) DI::config()->get('system', 'activitypub_object_cache_ttl', 0),
+				ActivityPubObjectCache::isPublicObject($item, $this->parameters),
+				$this->server,
+				headers_list(),
+			));
 			$this->earlyJsonExit($data, 'application/activity+json');
 		}
 	}
